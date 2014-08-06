@@ -98,6 +98,6 @@ More details are available in the forums.
 
 h2. See Also
 
-* "The homepage":https://www.facebook.com/SPIDEE-1/
+* "The homepage":https://www.facebook.com/SPIDEEONE/
 * "The creators":https://www.marginallyclever.com/
 * "The forums":https://marginallyclever.com/forum/
