@@ -1,0 +1,103 @@
+h1. Hexapod
+
+_An Java OpenGL simulator of a 6 legged crab robot_
+
+h2. About
+
+My first robot was a hexapod (crab robot).  I didn't know how to make it walk.  Nobody was sharing their code, either.
+
+I didn't want to break 18 $15 servos the first time it tried to stand up. I knew how to write video games, so I loaded my crab design into an empty world and taught it to walk there.
+
+This program is that simulation, open source and free of charge.  I hope you find it useful!  
+
+It was living on sourceforge for a long time and nobody could find or use it.  It also ran in SDL and all my new stuff runs in Java, so I ported it over.  New bugs may have snuck in.
+
+h2. Get it
+h2. Make it
+h2. Use it
+
+OSX users should be able to run with start.command.
+Win32 users should be able to run with start32.bat.
+Win64 users should be able to run with start64.bat.
+
+h3. general commands
+
+When the program begins, click once in the window so it can hear keyboard instructions.
+
+While holding the right mouse button:
+
+* WASDQE will fly the camera
+* moving the mouse will turn the camera
+
+When the program starts you are in calibration mode.  There are several modes:
+
+* calibration
+* sit down
+* stand up
+* move body
+* ripple walk (one leg at a time)
+* wave walk (two legs at a time)
+* tripod walk (three legs at a time)
+
+period and comma will cycle through the modes.
+
+h3. calibration mode
+ 
+This mode is for calibrating the servos on the real robot.  It's mostly useless at present.
+
+h3. sit down
+
+Robot sits down and returns to startup position.
+
+h3. stand up
+
+Robot plants all feet and moves body to be between the feet.
+
+h3. move body
+
+WASDQE will move the body without moving the toes.
+ZXCVRF will rotate the body without moving the toes.
+B will return the body to center and level.
+
+*You do not have to return the body to center position to walk.*
+
+h3. ripple walk
+h3. wave walk
+h3. tripod walk
+
+* WS walk forward and backward
+* AD walk sideways (strafe)
+* QE raise and lower the body
+* RF turn while walking.
+
+h2. Report a bug
+
+Please use the github issue tracker in this project to see known bugs and add your findings.
+
+h2. Get help
+
+Please visit "the forums":https://marginallyclever.com/forum 
+
+h2. To run the project in eclipse
+
+* Choose File > Import > General > Existing Projects into Workspace and select "Next".
+* Choose "Browse" next to "Select root directory" and select the root folder of your download/clone from github.
+* eclipse will scan the folder and find the project.  Choose "Finish"
+
+This project has been developed with the 1.7 JDK.  You can find out more about it here:
+
+* http://stackoverflow.com/questions/6267392/how-do-i-use-jdk-7-on-mac-osx
+* http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+This project has been developed with JOGL as a library.  You can find out more about it here:
+
+* https://jogamp.org/wiki/index.php/Downloading_and_installing_JOGL
+* https://jogamp.org/wiki/index.php/Setting_up_a_JogAmp_project_in_your_favorite_IDE#Eclipse_IDE_project
+
+More details are available in the forums.
+
+h2. See Also
+
+* "The homepage":https://www.facebook.com/SPIDEE-1/
+* "The creators":https://www.marginallyclever.com/
+* "The forums":https://marginallyclever.com/forum/

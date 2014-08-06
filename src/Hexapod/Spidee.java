@@ -1385,9 +1385,12 @@ extends RobotWithSerialConnection {
 	  if( strafe_direction < 0 ) dir.sub(body.left);  // strafe right
 
 	  dir.z=0;
-	  dir.normalize();
+	  if(dir.length() > 0.001f ) {
+		  dir.normalize();
+	  }
 
-	  Vector3f p= new Vector3f(0,0,0);
+	  Vector3f p = new Vector3f(0,0,0);
+//	  float zi=0;
 	  
 	  for(i=0;i<6;++i) {
 	    Leg leg = legs[i];
@@ -1397,6 +1400,7 @@ extends RobotWithSerialConnection {
 
 	    Vector3f ptemp= new Vector3f(leg.ankle_joint.pos);
 	    if(leg.on_ground) {
+//	    	++zi;
 		} else ptemp.z=0;
 	    p.add(ptemp);
 	  }
