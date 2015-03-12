@@ -1,9 +1,9 @@
 package Hexapod;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.nio.FloatBuffer;
+import java.awt.event.KeyEvent;
 
-import com.jogamp.newt.event.KeyEvent;
+import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL2;
 import javax.swing.JMenu;

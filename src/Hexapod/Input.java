@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 public class Input {
 	public static enum ButtonState {
@@ -17,29 +17,29 @@ public class Input {
 		RELEASED,
 	}
 	
-	public static final int MAX_MICE              =(4);
-	public static final int MAX_JOYSTICKS         =(2);
-	public static final int NUM_BUTTONS_PER_MOUSE = MouseEvent.BUTTON_COUNT;
-	public static final int NUM_BUTTONS_PER_KB    = 256;
+	public static final int MAX_MICE              = 4;
+	public static final int MAX_JOYSTICKS         = 2;
+	public static final int NUM_BUTTONS_PER_MOUSE = 32;  // MouseEvent only supports 3 buttons
+	public static final int NUM_BUTTONS_PER_KB    = KeyEvent.KEY_LAST;
 	
-	public static final int NUM_AXIES_PER_MOUSE   =(4);
-	public static final int NUM_BUTTONS_PER_JOY   =(14);
-	public static final int NUM_AXIES_PER_JOY     =(10);
-	public static final int NUM_HAT_PER_JOY       =(4);
-	public static final int NUM_MOUSE_BUTTONS     =(NUM_BUTTONS_PER_MOUSE*MAX_MICE);
-	public static final int NUM_MOUSE_AXIES       =(NUM_AXIES_PER_MOUSE*MAX_MICE);
-	public static final int NUM_JOY_BUTTONS       =(NUM_BUTTONS_PER_JOY*MAX_JOYSTICKS);
-	public static final int NUM_JOY_AXIES         =(NUM_AXIES_PER_JOY*MAX_JOYSTICKS);
-	public static final int NUM_JOY_HATS          =(NUM_HAT_PER_JOY*MAX_JOYSTICKS);
+	public static final int NUM_AXIES_PER_MOUSE   = 4;
+	public static final int NUM_BUTTONS_PER_JOY   = 14;
+	public static final int NUM_AXIES_PER_JOY     = 10;
+	public static final int NUM_HAT_PER_JOY       = 4;
+	public static final int NUM_MOUSE_BUTTONS     = (NUM_BUTTONS_PER_MOUSE*MAX_MICE);
+	public static final int NUM_MOUSE_AXIES       = (NUM_AXIES_PER_MOUSE*MAX_MICE);
+	public static final int NUM_JOY_BUTTONS       = (NUM_BUTTONS_PER_JOY*MAX_JOYSTICKS);
+	public static final int NUM_JOY_AXIES         = (NUM_AXIES_PER_JOY*MAX_JOYSTICKS);
+	public static final int NUM_JOY_HATS          = (NUM_HAT_PER_JOY*MAX_JOYSTICKS);
 
-	public static final int FIRST_KB_BUTTON       =0;
-	public static final int FIRST_MOUSE_BUTTON    =(NUM_BUTTONS_PER_KB);
-	public static final int FIRST_MOUSE_AXIS      =(FIRST_MOUSE_BUTTON+NUM_MOUSE_BUTTONS);
+	public static final int FIRST_KB_BUTTON       = 0;
+	public static final int FIRST_MOUSE_BUTTON    = (NUM_BUTTONS_PER_KB);
+	public static final int FIRST_MOUSE_AXIS      = (FIRST_MOUSE_BUTTON+NUM_MOUSE_BUTTONS);
 
-	public static final int FIRST_JOY_BUTTON      =(FIRST_MOUSE_AXIS  +NUM_MOUSE_AXIES  );
-	public static final int FIRST_JOY_AXIS        =(FIRST_JOY_BUTTON  +NUM_JOY_BUTTONS  );
-	public static final int FIRST_JOY_HAT         =(FIRST_JOY_AXIS    +NUM_JOY_AXIES    );
-	public static final int TOTAL_KEYS            =(FIRST_JOY_HAT     +NUM_JOY_HATS     );
+	public static final int FIRST_JOY_BUTTON      = (FIRST_MOUSE_AXIS  +NUM_MOUSE_AXIES  );
+	public static final int FIRST_JOY_AXIS        = (FIRST_JOY_BUTTON  +NUM_JOY_BUTTONS  );
+	public static final int FIRST_JOY_HAT         = (FIRST_JOY_AXIS    +NUM_JOY_AXIES    );
+	public static final int TOTAL_KEYS            = (FIRST_JOY_HAT     +NUM_JOY_HATS     );
 
 	class InputElement {
 		float value;
@@ -217,7 +217,8 @@ public class Input {
 		float biggest=(0);
 		int i;
 		for(i=0;i<k.ids.size();++i) {
-			InputElement ie = data.items_old[k.ids.get(i)];
+			int input_id = k.ids.get(i);
+			InputElement ie = data.items_old[input_id];
 		    float f=ie.value/(ie.rangeMax-ie.rangeMin);  //0...1 input range
 		    //f=(f-key->second.cutoffMin)/(key->second.cutoffMax-key->second.cutoffMin); //0...1 adjusted
 		    if(f>1.0f)
@@ -279,10 +280,10 @@ public class Input {
     public void mouseClicked(MouseEvent e) {}
     
     public void mousePressed(MouseEvent e) {
-    	addKeyAction(Input.FIRST_MOUSE_BUTTON+e.getButton()-1,1);
+    	addKeyAction(Input.FIRST_MOUSE_BUTTON+e.getButton(),1);
     }
     public void mouseReleased(MouseEvent e) {
-    	addKeyAction(Input.FIRST_MOUSE_BUTTON+e.getButton()-1,0);
+    	addKeyAction(Input.FIRST_MOUSE_BUTTON+e.getButton(),0);
     }    
     public void keyPressed(KeyEvent e) {
     	addKeyAction(Input.FIRST_KB_BUTTON+e.getKeyCode(),1);

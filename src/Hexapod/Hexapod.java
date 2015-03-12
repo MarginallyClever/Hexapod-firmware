@@ -5,8 +5,13 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,21 +29,15 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLPipelineFactory;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 
-import com.jogamp.newt.event.KeyAdapter;
-import com.jogamp.newt.event.MouseAdapter;
-import com.jogamp.newt.event.MouseEvent;
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.awt.AWTKeyAdapter;
-import com.jogamp.newt.event.awt.AWTMouseAdapter;
 import com.jogamp.opengl.util.Animator;
 
 
 
 public class Hexapod 
-implements ActionListener, GLEventListener
+implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMotionListener
 {
 	static final long serialVersionUID=1;
 	static final String version="1";
@@ -113,12 +112,35 @@ implements ActionListener, GLEventListener
             }
           });
 
-        final GLCanvas glcanvas = new GLCanvas();
+        final GLJPanel glcanvas = new GLJPanel();
         animator.add(glcanvas);
         glcanvas.addGLEventListener(this);
+
+        frame.addKeyListener(this);
+        frame.addMouseListener(this);
+        frame.addMouseMotionListener(this);
+
         frame.add( glcanvas, BorderLayout.CENTER );
+		frame.setFocusable(true);
+		frame.requestFocusInWindow();
+
+		// focus not returning after modal dialog boxes
+		// http://stackoverflow.com/questions/5150964/java-keylistener-does-not-listen-after-regaining-focus
+		frame.addFocusListener(new FocusListener(){
+            public void focusGained(FocusEvent e){
+                //System.out.println("Focus GAINED:"+e);
+            }
+            public void focusLost(FocusEvent e){
+                //System.out.println("Focus LOST:"+e);
+
+                // FIX FOR GNOME/XWIN FOCUS BUG
+                e.getComponent().requestFocus();
+            }
+        });
+		
         frame.validate();
         frame.setVisible(true);
+        
         animator.start();
         
         last_time = start_time = System.currentTimeMillis();
@@ -147,6 +169,8 @@ implements ActionListener, GLEventListener
         mainMenu.add(menu);
         
         mainMenu.add(world.updateMenu());
+        
+        mainMenu.updateUI();
 	}
 	
 	
@@ -313,21 +337,6 @@ implements ActionListener, GLEventListener
                 gl = gl.getContext().setGL( GLPipelineFactory.create("javax.media.opengl.Trace", null, gl, new Object[] { System.err } ) );
             } catch (Exception e) {e.printStackTrace();}
         }
-
-
-		MouseAdapter myMouse = new MyMouseAdapter();
-		KeyAdapter myKeys = new MyKeyAdapter();
-		
-		if (drawable instanceof Window) {
-			Window window = (Window) drawable;
-			window.addMouseListener((MouseListener)myMouse);
-			window.addKeyListener((KeyListener)myKeys);
-			window.requestFocus();
-		} else if (GLProfile.isAWTAvailable() && drawable instanceof java.awt.Component) {
-			java.awt.Component comp = (java.awt.Component) drawable;
-			new AWTMouseAdapter(myMouse).addTo(comp);
-			new AWTKeyAdapter(myKeys).addTo(comp);
-		}
     }
     
     
@@ -367,34 +376,44 @@ implements ActionListener, GLEventListener
         Input.GetSingleton().update();        
     }
 	
-    
-	  class MyKeyAdapter extends KeyAdapter {
-		  public void keyPressed(KeyEvent e) {
-			  Input.GetSingleton().keyPressed(e);
-		  }
-		  public void keyReleased(KeyEvent e) {
-			  Input.GetSingleton().keyReleased(e);
-		  }
-	  }
-	  
-	  
-	  class MyMouseAdapter extends MouseAdapter {
-	      public void mousePressed(MouseEvent e) {
-		      Input.GetSingleton().mousePressed(e);
-	      }
-	        
-	      public void mouseReleased(MouseEvent e) {
-	    	  Input.GetSingleton().mouseReleased(e);
-	      }
-	        
-	      public void mouseDragged(MouseEvent e) {
-	    	  Input.GetSingleton().mouseDragged(e);
-	      }
-	      public void mouseMoved(MouseEvent e) {
-	    	  Input.GetSingleton().mouseMoved(e);
-	      }
-	      public void MouseWheelMoved(MouseWheelEvent e) {
-	    	  Input.GetSingleton().mouseWheelMoved(e);
-	      }
-	  }
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		Input.GetSingleton().keyPressed(e);
+	}
+	@Override
+	public void keyReleased(KeyEvent e) {
+		Input.GetSingleton().keyReleased(e);
+	}
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		Input.GetSingleton().mousePressed(e);
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		Input.GetSingleton().mouseReleased(e);
+	}
+	public void mouseDragged(MouseEvent e) {
+		Input.GetSingleton().mouseDragged(e);
+	}
+	public void mouseMoved(MouseEvent e) {
+		Input.GetSingleton().mouseMoved(e);
+	}
+	public void mouseClicked(MouseEvent e) {
+		Input.GetSingleton().mouseClicked(e);
+	}
+	public void mouseEntered(MouseEvent e) {
+		Input.GetSingleton().mouseEntered(e);
+	}
+	public void mouseExited(MouseEvent e) {
+		Input.GetSingleton().mouseExited(e);
+	}
+	public void MouseWheelMoved(MouseWheelEvent e) {
+		Input.GetSingleton().mouseWheelMoved(e);
+    }
 }
