@@ -69,11 +69,11 @@ implements ActionListener {
         menu.getAccessibleContext().setAccessibleDescription("Connection settings.");
         
     	subMenu=robot0.getMenu();
-        subMenu.setText("Arm 0");
+        subMenu.setText("Hexapod 0");
         menu.add(subMenu);
 /*
      	subMenu=robot1.getMenu();
-        subMenu.setText("Arm 1");
+        subMenu.setText("Hexapod 1");
         menu.add(subMenu);
 */
         buttonRescan = new JMenuItem("Rescan Ports",KeyEvent.VK_R);
