@@ -605,6 +605,7 @@ extends RobotWithSerialConnection {
 		  case MOVE_MODE_RIPPLE   :  b=4;  break;
 		  case MOVE_MODE_WAVE     :  b=5;  break;
 		  case MOVE_MODE_TRIPOD   :  b=6;  break;
+		  default: break;
 		  }
 		  ByteBuffer buffer=ByteBuffer.allocate(BUTTONS_MAX+1);
 		  buffer.put(0,b);
@@ -634,6 +635,7 @@ extends RobotWithSerialConnection {
 	    	case MOVE_MODE_RIPPLE   :  move_mode = Spidee.MoveModes.MOVE_MODE_WAVE     ;  break;
 	    	case MOVE_MODE_WAVE     :  move_mode = Spidee.MoveModes.MOVE_MODE_TRIPOD   ;  break;
 	    	case MOVE_MODE_TRIPOD   :  move_mode = Spidee.MoveModes.MOVE_MODE_CALIBRATE;  break;
+			  default: break;
 	    	}
 	      //paused=true;
 	    }
@@ -646,6 +648,7 @@ extends RobotWithSerialConnection {
 		    case MOVE_MODE_RIPPLE   :  move_mode = Spidee.MoveModes.MOVE_MODE_BODY     ;  break;
 		    case MOVE_MODE_WAVE     :  move_mode = Spidee.MoveModes.MOVE_MODE_RIPPLE   ;  break;
 		    case MOVE_MODE_TRIPOD   :  move_mode = Spidee.MoveModes.MOVE_MODE_WAVE     ;  break;
+			  default: break;
 	    	}
 	      //paused=true;
 	    }

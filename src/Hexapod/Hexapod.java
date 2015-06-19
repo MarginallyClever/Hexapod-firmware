@@ -1,12 +1,9 @@
 package Hexapod;
 
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -19,7 +16,6 @@ import java.net.URL;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -197,7 +193,6 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
           });
 
         glcanvas = new GLJPanel();
-        
         animator.add(glcanvas);
         glcanvas.addGLEventListener(this);
         
@@ -316,47 +311,34 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
 		}
 
 		if( subject == buttonFlyUp ) {
-			Vector3f up = new Vector3f(world.camera.up);
-			up.scale(-1);
-			world.camera.position.add(up);
+			world.camera.move_ud= ( world.camera.move_ud==1 ) ? 0 : 1;
 		}
 		if( subject == buttonFlyDown ) {
-			Vector3f up = new Vector3f(world.camera.up);
-			world.camera.position.add(up);
-		
+			world.camera.move_ud= ( world.camera.move_ud==-1 ) ? 0 : -1;
 		}
 		if( subject == buttonFlyLeft ) {
-			Vector3f up = new Vector3f(world.camera.right);
-			world.camera.position.add(up);		
+			world.camera.move_lr= ( world.camera.move_lr==1 ) ? 0 : 1;
 		}
 		if( subject == buttonFlyRight ) {
-			Vector3f up = new Vector3f(world.camera.right);
-			up.scale(-1);
-			world.camera.position.add(up);		
+			world.camera.move_lr= ( world.camera.move_lr==-1 ) ? 0 : -1;
 		}
 		if( subject == buttonFlyForward ) {
-			Vector3f up = new Vector3f(world.camera.forward);
-			up.scale(-1);
-			world.camera.position.add(up);		
+			world.camera.move_fb= ( world.camera.move_fb==1 ) ? 0 : 1;
 		}
 		if( subject == buttonFlyBackward ) {
-			Vector3f up = new Vector3f(world.camera.forward);
-			world.camera.position.add(up);		
+			world.camera.move_fb= ( world.camera.move_fb==-1 ) ? 0 : -1;
 		}
-
 		if( subject == buttonLookDown ) {
-			world.camera.tilt-=1;
-			if(world.camera.tilt < 1) world.camera.tilt = 1;
+			world.camera.tilt_dir= ( world.camera.tilt_dir==-1 ) ? 0 : -1;	
 		}
 		if( subject == buttonLookUp ) {
-			world.camera.tilt+=1;
-			if(world.camera.tilt > 179) world.camera.tilt = 179;		
+			world.camera.tilt_dir= ( world.camera.tilt_dir==1 ) ? 0 : 1;
 		}
 		if( subject == buttonLookLeft ) {
-			world.camera.pan-=1;
+			world.camera.pan_dir= ( world.camera.pan_dir==-1 ) ? 0 : -1;
 		}
 		if( subject == buttonLookRight ) {
-			world.camera.pan+=1;
+			world.camera.pan_dir= ( world.camera.pan_dir==1 ) ? 0 : 1;
 		}
 
 
