@@ -581,7 +581,7 @@ extends RobotWithSerialConnection {
 		  if(!open && comm.IsOpen()) {
 		    SendZeros();
 		  }*/
-
+/*
 		  buttons[BUTTONS_X_POS]     = (int) Input.GetSingleton().GetAxisState("spidee","strafe_left");
 		  buttons[BUTTONS_X_NEG]     = (int) Input.GetSingleton().GetAxisState("spidee","strafe_right");
 		  buttons[BUTTONS_Y_POS]     = (int) Input.GetSingleton().GetAxisState("spidee","strafe_back");
@@ -595,7 +595,7 @@ extends RobotWithSerialConnection {
 		  buttons[BUTTONS_Y_ROT_POS] = (int) Input.GetSingleton().GetAxisState("spidee","tilt_left");
 		  buttons[BUTTONS_Y_ROT_NEG] = (int) Input.GetSingleton().GetAxisState("spidee","tilt_right");
 		  buttons[BUTTONS_0]         = (int) Input.GetSingleton().GetAxisState("spidee","recenter");
-
+*/
 		  Byte b=0;
 		  switch(move_mode) {
 		  case MOVE_MODE_CALIBRATE:  b=0;  break;

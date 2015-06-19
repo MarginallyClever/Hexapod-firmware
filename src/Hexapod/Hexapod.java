@@ -2,6 +2,7 @@ package Hexapod;
 
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -17,11 +18,17 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.vecmath.Vector3f;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -32,7 +39,6 @@ import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 
 import com.jogamp.opengl.util.Animator;
-
 
 
 public class Hexapod 
@@ -51,6 +57,41 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
 	
 	/* window management */
     final JFrame frame; 
+	private GLJPanel glcanvas;
+    private JTabbedPane contextMenu;
+    private Splitter split_left_right;
+    private JPanel cameraPanel=null, spideePanel=null;
+
+	private JButton buttonFlyUp;
+	private JButton buttonFlyDown;
+	private JButton buttonFlyLeft;
+	private JButton buttonFlyRight;
+	private JButton buttonFlyForward;
+	private JButton buttonFlyBackward;
+	
+	private JButton buttonLookUp;
+	private JButton buttonLookDown;
+	private JButton buttonLookLeft;
+	private JButton buttonLookRight;
+	
+	private JButton buttonSpideeStand;
+	private JButton buttonSpideeSit;
+	
+	private JButton buttonSpideeUp;
+	private JButton buttonSpideeDown;
+	
+	private JButton buttonSpideeStill;
+	private JButton buttonSpideeWalkStyle1;
+	private JButton buttonSpideeWalkStyle2;
+	private JButton buttonSpideeWalkStyle3;
+	
+	private JButton buttonSpideeWalkForward;
+	private JButton buttonSpideeWalkBack;
+	private JButton buttonSpideeWalkLeft;
+	private JButton buttonSpideeWalkRight;
+	private JButton buttonSpideeTurnLeft;
+	private JButton buttonSpideeTurnRight;
+
     /* animation system */
     final Animator animator = new Animator();
     
@@ -62,7 +103,7 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
 	// settings
 	private Preferences prefs;
 	private String[] recentFiles = {"","","","","","","","","",""};
-    
+
 	
 	public static void main(String[] argv) {
 		getSingleton();
@@ -80,13 +121,57 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
 	}
 	
 	
+	private JButton createButton(String name) {
+		JButton b = new JButton(name);
+		b.addActionListener(this);
+		return b;
+	}
+	
+	private void createCameraPanel() {
+		cameraPanel = new JPanel(new GridLayout(0,1));
+		
+		cameraPanel.add(buttonFlyUp = createButton("fly up"));
+		cameraPanel.add(buttonFlyDown = createButton("fly down"));
+		cameraPanel.add(buttonFlyLeft = createButton("fly left"));
+		cameraPanel.add(buttonFlyRight = createButton("fly right"));
+		cameraPanel.add(buttonFlyForward = createButton("fly forward"));
+		cameraPanel.add(buttonFlyBackward = createButton("fly backward"));
+
+		cameraPanel.add(buttonLookUp = createButton("look up"));
+		cameraPanel.add(buttonLookDown = createButton("look down"));
+		cameraPanel.add(buttonLookLeft = createButton("look left"));
+		cameraPanel.add(buttonLookRight = createButton("look right"));
+	}
+	
+	private void createSpideePanel() {
+		spideePanel = new JPanel(new GridLayout(0,1));
+		
+		spideePanel.add(buttonSpideeStand = createButton("stand"));
+		spideePanel.add(buttonSpideeSit = createButton("sit"));
+
+		spideePanel.add(buttonSpideeUp = createButton("body up"));
+		spideePanel.add(buttonSpideeDown = createButton("body down"));
+
+		spideePanel.add(buttonSpideeStill = createButton("stand still"));
+		spideePanel.add(buttonSpideeWalkStyle1 = createButton("walk style 1"));
+		spideePanel.add(buttonSpideeWalkStyle2 = createButton("walk style 2"));
+		spideePanel.add(buttonSpideeWalkStyle3 = createButton("walk style 3"));
+
+		spideePanel.add(buttonSpideeWalkForward = createButton("walk forward"));
+		spideePanel.add(buttonSpideeWalkBack = createButton("walk backward"));
+		spideePanel.add(buttonSpideeWalkLeft = createButton("walk left"));
+		spideePanel.add(buttonSpideeWalkRight = createButton("walk right"));
+		spideePanel.add(buttonSpideeTurnLeft = createButton("turn left"));
+		spideePanel.add(buttonSpideeTurnRight = createButton("turn right"));
+	}
+	
 	protected Hexapod() {
 		prefs = Preferences.userRoot().node("Hexapod");
 		
 		LoadConfig();
 		
         frame = new JFrame( "Hexapod SPIDEE-1" ); 
-        frame.setSize( 800, 600 );
+        frame.setSize( 1024, 768 );
         frame.setLayout(new java.awt.BorderLayout());
 
 
@@ -111,18 +196,28 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
             }
           });
 
-        final GLJPanel glcanvas = new GLJPanel();
+        glcanvas = new GLJPanel();
+        
         animator.add(glcanvas);
         glcanvas.addGLEventListener(this);
+        
+        createCameraPanel();
+        createSpideePanel();
 
-        frame.addKeyListener(this);
-        frame.addMouseListener(this);
-        frame.addMouseMotionListener(this);
+        contextMenu = new JTabbedPane();
+        contextMenu.addTab("Camera",null,cameraPanel,null);
+        contextMenu.addTab("SPIDEE",null,spideePanel,null);
 
-        frame.add( glcanvas, BorderLayout.CENTER );
-		frame.setFocusable(true);
-		frame.requestFocusInWindow();
+        split_left_right = new Splitter(JSplitPane.HORIZONTAL_SPLIT);
+        split_left_right.add(glcanvas);
+        split_left_right.add(contextMenu);
 
+		//frame.setFocusable(true);
+		//frame.requestFocusInWindow();
+        //frame.addKeyListener(this);
+        //frame.addMouseListener(this);
+        //frame.addMouseMotionListener(this);
+/*
 		// focus not returning after modal dialog boxes
 		// http://stackoverflow.com/questions/5150964/java-keylistener-does-not-listen-after-regaining-focus
 		frame.addFocusListener(new FocusListener(){
@@ -136,7 +231,8 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
                 e.getComponent().requestFocus();
             }
         });
-		
+*/
+        frame.add(split_left_right);
         frame.validate();
         frame.setVisible(true);
         
@@ -217,6 +313,114 @@ implements ActionListener, GLEventListener, KeyListener, MouseListener, MouseMot
 		if( subject == buttonQuit ) {
 			System.exit(0);
 			return;
+		}
+
+		if( subject == buttonFlyUp ) {
+			Vector3f up = new Vector3f(world.camera.up);
+			up.scale(-1);
+			world.camera.position.add(up);
+		}
+		if( subject == buttonFlyDown ) {
+			Vector3f up = new Vector3f(world.camera.up);
+			world.camera.position.add(up);
+		
+		}
+		if( subject == buttonFlyLeft ) {
+			Vector3f up = new Vector3f(world.camera.right);
+			world.camera.position.add(up);		
+		}
+		if( subject == buttonFlyRight ) {
+			Vector3f up = new Vector3f(world.camera.right);
+			up.scale(-1);
+			world.camera.position.add(up);		
+		}
+		if( subject == buttonFlyForward ) {
+			Vector3f up = new Vector3f(world.camera.forward);
+			up.scale(-1);
+			world.camera.position.add(up);		
+		}
+		if( subject == buttonFlyBackward ) {
+			Vector3f up = new Vector3f(world.camera.forward);
+			world.camera.position.add(up);		
+		}
+
+		if( subject == buttonLookDown ) {
+			world.camera.tilt-=1;
+			if(world.camera.tilt < 1) world.camera.tilt = 1;
+		}
+		if( subject == buttonLookUp ) {
+			world.camera.tilt+=1;
+			if(world.camera.tilt > 179) world.camera.tilt = 179;		
+		}
+		if( subject == buttonLookLeft ) {
+			world.camera.pan-=1;
+		}
+		if( subject == buttonLookRight ) {
+			world.camera.pan+=1;
+		}
+
+
+		if( subject == buttonSpideeStand ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_STANDUP;
+		}
+		if( subject == buttonSpideeSit ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_SITDOWN;
+		}
+
+		if( subject == buttonSpideeUp ) {
+			world.robot0.buttons[Spidee.BUTTONS_Z_POS] = ( world.robot0.buttons[Spidee.BUTTONS_Z_POS]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_NEG]=0;
+		}
+		if( subject == buttonSpideeDown ) {
+			world.robot0.buttons[Spidee.BUTTONS_Z_NEG] = ( world.robot0.buttons[Spidee.BUTTONS_Z_NEG]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_POS]=0;
+		}
+
+		if( subject == buttonSpideeWalkStyle1 ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_RIPPLE;
+		}
+		if( subject == buttonSpideeWalkStyle2 ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_WAVE;		
+		}
+		if( subject == buttonSpideeWalkStyle3 ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_TRIPOD;
+		}
+		
+		if( subject == buttonSpideeStill ) {
+			world.robot0.move_mode=Spidee.MoveModes.MOVE_MODE_STANDUP;
+			world.robot0.buttons[Spidee.BUTTONS_Z_POS]=0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_NEG]=0;
+			world.robot0.buttons[Spidee.BUTTONS_Y_POS]=0;
+			world.robot0.buttons[Spidee.BUTTONS_Y_NEG]=0;
+			world.robot0.buttons[Spidee.BUTTONS_X_POS]=0;
+			world.robot0.buttons[Spidee.BUTTONS_X_NEG]=0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_POS]=0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_NEG]=0;
+		}
+
+		if( subject == buttonSpideeWalkForward ) {
+			world.robot0.buttons[Spidee.BUTTONS_Y_POS] = ( world.robot0.buttons[Spidee.BUTTONS_Y_POS]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Y_NEG]=0;
+		}
+		if( subject == buttonSpideeWalkBack ) {
+			world.robot0.buttons[Spidee.BUTTONS_Y_NEG] = ( world.robot0.buttons[Spidee.BUTTONS_Y_NEG]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Y_POS]=0;
+		}
+		if( subject == buttonSpideeWalkLeft ) {
+			world.robot0.buttons[Spidee.BUTTONS_X_POS] = ( world.robot0.buttons[Spidee.BUTTONS_X_POS]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_X_NEG]=0;
+		}
+		if( subject == buttonSpideeWalkRight ) {
+			world.robot0.buttons[Spidee.BUTTONS_X_NEG] = ( world.robot0.buttons[Spidee.BUTTONS_X_NEG]==0 ) ? 2 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_X_POS]=0;
+		}
+		if( subject == buttonSpideeTurnLeft ) {
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_POS] = ( world.robot0.buttons[Spidee.BUTTONS_Z_ROT_POS]==0 ) ? 1 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_NEG]=0;
+		}
+		if( subject == buttonSpideeTurnRight ) {
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_NEG] = ( world.robot0.buttons[Spidee.BUTTONS_Z_ROT_NEG]==0 ) ? 1 : 0;
+			world.robot0.buttons[Spidee.BUTTONS_Z_ROT_POS]=0;
 		}
 	}
 
